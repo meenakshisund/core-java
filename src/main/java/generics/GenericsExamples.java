@@ -27,6 +27,8 @@ public class GenericsExamples
         wildCardExtendsExample();
         wildCardSuperExample();
 
+        describeAllTypes();
+
         /*Stream.of(1, 2).map(new Function<Integer, Object>() {
             @Override
             public Object apply(Integer integer) {
@@ -60,6 +62,84 @@ public class GenericsExamples
                 .stream()
                 .map((Person person) -> { return person.getAge(); }
                 ).forEach(System.out::println);*/
+    }
+
+    private static void describeAllTypes() {
+
+        List<? extends Apple> applesExtends = new ArrayList<>();
+        List<? super Apple> applesSuper = new ArrayList<>();
+        List<Apple> apples = new ArrayList<>();
+
+        List<Apple> appleList = Arrays.asList(new Apple(), new Apple());
+        List<Fruit> fruitList = Arrays.asList(new Fruit(), new Fruit());
+        List<ShimlaApple> shimlaAppleList = Arrays.asList(new ShimlaApple(), new ShimlaApple());
+// -----------------------------  extends -------------------------------------------//
+// Addition of items is never allowed
+        applesExtends.add(new Fruit());
+        applesExtends.add(new Apple());
+        applesExtends.add(new ShimlaApple());
+// able to assign only of that T and below. No super. B, C allowed. Not A)
+        applesExtends = appleList;
+        applesExtends = fruitList;
+        applesExtends = shimlaAppleList;
+// Iteration : known type : T
+        for(Apple apple: applesExtends)
+            System.out.println(apple + " hello : " + apple.getClass());
+// -----------------------------  super -------------------------------------------//
+// Addition of items allowed with a condition - Item addition allowed for T and below. No super
+        applesSuper.add(new Fruit());
+        applesSuper.add(new Apple());
+        applesSuper.add(new ShimlaApple());
+// able to assign only of that T and above. No subclasses assignment accepted
+        applesSuper = appleList;
+        applesSuper = fruitList;
+        applesSuper = shimlaAppleList;
+// Iteration: Unknown Type : Object
+        for(Object apple: applesSuper)
+            System.out.println(apple + " hello : " + apple.getClass());
+// -----------------------------  normal -------------------------------------------//
+// Addition of items allowed with a condition - Item addition allowed for T and below. No super; able to assign only of that type(no super class assignment)
+        apples.add(new Fruit());
+        apples.add(new Apple());
+        apples.add(new ShimlaApple());
+// able to assign only of that T. No subclass/superclass assignment accepted
+        apples = appleList;
+        apples = fruitList;
+        apples = shimlaAppleList;
+// Iteration : known type : T
+        for(Apple apple: apples)
+            System.out.println(apple + " hello : " + apple.getClass());
+// -----------------------------  Collections.addAll(? extends T) -------------------------------------------//
+// Addition of items allowed with a condition - Item addition allowed for T and below. No super; able to assign only of that type(no super class assignment)
+        apples.addAll(fruitList);
+        apples.addAll(appleList);
+        apples.addAll(shimlaAppleList);
+
+// -----------------------------  Collections.copy(List<? super T> dest, List<? extends T> src) -------------------------------------------//
+// Collections.java copy(dest, src) describes copying src to dest;
+// dest should be able to accept(add); src should be able to produce(read); ** di.set(si.next()) **
+
+        /*public static <T > void copy (List < ? super T > dest, List < ? extends T > src){
+            int srcSize = src.size();
+            if (srcSize > dest.size()) {
+                throw new IndexOutOfBoundsException("Source does not fit in dest");
+            } else {
+                if (srcSize < 10 || src instanceof RandomAccess && dest instanceof RandomAccess) {
+                    for (int i = 0; i < srcSize; ++i) {
+                        dest.set(i, src.get(i));
+                    }
+                } else {
+                    ListIterator<? super T> di = dest.listIterator();
+                    ListIterator<? extends T> si = src.listIterator();
+
+                    for (int i = 0; i < srcSize; ++i) {
+                        di.next();
+                        di.set(si.next());
+                    }
+                }
+
+            }
+        }*/
     }
 
     private static void wildCardExtendsExample() {
